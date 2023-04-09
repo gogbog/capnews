@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+    networks:
+      - newscap-network
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    ports:
+      - "8082:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 123456
+      ME_CONFIG_MONGODB_SERVER: mongodb
+    depends_on:
+      - mongodb
+    networks:
+      - newscap-network
+
+  news-manage-articles-app:
+    build:
+      context: .
+      dockerfile: manage-articles/Dockerfile
+    container_name: news-manage-articles-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+    environment:
+      - SPRING_DATA_MONGODB_HOST=mongodb
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_DATABASE=cap-news
+      - SPRING_DATA_MONGODB_USERNAME=root
+      - SPRING_DATA_MONGODB_PASSWORD=123456
+      - SPRING_PROFILES_ACTIVE=dev
+    volumes:
+      - ./manage-articles/src:/src
+      - ./manage-articles/pom.xml:/pom.xml
+    command: mvn spring-boot:run
+    networks:
+      - newscap-network
+
+networks:
+  newscap-network:
+    driver: bridge
+
