@@ -1,7 +1,7 @@
 import { UserManager } from 'oidc-client';
 
 const settings = {
-  authority: "http://backend-keycloak-auth:8080/auth/realms/my_realm/",
+  authority: "http://keycloak:8080/auth/realms/my_realm/",
   client_id: "frontend_client",
   redirect_uri: "http://localhost:3000/signin-callback.html",
   response_type: 'code',
