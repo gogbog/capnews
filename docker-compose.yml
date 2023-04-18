@@ -7,7 +7,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./data:/data/db
+      - ./data/articles:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: 123456
@@ -34,7 +34,7 @@ services:
       dockerfile: manage-articles/Dockerfile
     container_name: news-manage-articles-app
     ports:
-      - "8080:8080"
+      - "8090:8090"
     depends_on:
       - mongodb
     environment:
@@ -50,6 +50,72 @@ services:
     command: mvn spring-boot:run
     networks:
       - newscap-network
+
+  keycloak-db:
+    image: postgres:13.5
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: keycloak_db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/keycloak-data:/var/lib/postgresql/data
+    networks:
+      - newscap-network
+
+  kc:
+    image: jboss/keycloak
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: keycloak-db
+      DB_DATABASE: keycloak_db
+      DB_USER: admin
+      DB_PASSWORD: admin
+      DB_SCHEMA: public
+      KEYCLOAK_HOSTNAME: keycloak
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KK_TO_RMQ_URL: rabbitmq
+      KK_TO_RMQ_PORT: 5672
+      KK_TO_RMQ_VHOST: "/"
+      KK_TO_RMQ_EXCHANGE: amq.topic
+      KK_TO_RMQ_USERNAME: admin
+      KK_TO_RMQ_PASSWORD : admin
+      KK_TO_RMQ_USE_TLS : false
+    ports:
+      - 8080:8080
+    volumes:
+      - ./keycloak/providers:/opt/jboss/keycloak/standalone/deployments/
+    depends_on:
+      - keycloak-db
+      - rabbitmq
+    networks:
+      - newscap-network
+
+
+  rabbitmq:
+    image: rabbitmq:management
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - newscap-network
+
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    ports:
+      - "9000:9000"
+
+
 
 networks:
   newscap-network:
