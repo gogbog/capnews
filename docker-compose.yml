@@ -28,15 +28,33 @@ services:
     networks:
       - newscap-network
 
-  news-manage-articles-app:
+  gateaway:
+    build:
+      context: .
+      dockerfile: backend-gateway-client/Dockerfile
+    container_name: gateaway
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./backend-gateway-client/src:/src
+      - ./backend-gateway-client/pom.xml:/pom.xml
+    command: mvn spring-boot:run
+    depends_on:
+      - articles-app
+    networks:
+      - newscap-network
+
+  articles-app:
     build:
       context: .
       dockerfile: manage-articles/Dockerfile
-    container_name: news-manage-articles-app
+    container_name: articles
+    hostname: capnews-articles-app
     ports:
-      - "8090:8090"
+      - "8050:8050"
     depends_on:
       - mongodb
+      - kc
     environment:
       - SPRING_DATA_MONGODB_HOST=mongodb
       - SPRING_DATA_MONGODB_PORT=27017
@@ -46,8 +64,10 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     volumes:
       - ./manage-articles/src:/src
+      - ./manage-articles/images:/images
       - ./manage-articles/pom.xml:/pom.xml
     command: mvn spring-boot:run
+
     networks:
       - newscap-network
 
@@ -67,6 +87,8 @@ services:
 
   kc:
     image: jboss/keycloak
+    container_name: backend-keycloak-auth
+    hostname: keycloak
     environment:
       DB_VENDOR: postgres
       DB_ADDR: keycloak-db
@@ -82,8 +104,8 @@ services:
       KK_TO_RMQ_VHOST: "/"
       KK_TO_RMQ_EXCHANGE: amq.topic
       KK_TO_RMQ_USERNAME: admin
-      KK_TO_RMQ_PASSWORD : admin
-      KK_TO_RMQ_USE_TLS : false
+      KK_TO_RMQ_PASSWORD: admin
+      KK_TO_RMQ_USE_TLS: false
     ports:
       - 8080:8080
     volumes:
@@ -93,7 +115,6 @@ services:
       - rabbitmq
     networks:
       - newscap-network
-
 
   rabbitmq:
     image: rabbitmq:management
@@ -107,17 +128,6 @@ services:
     networks:
       - newscap-network
 
-  sonarqube:
-    image: sonarqube:latest
-    container_name: sonarqube
-    environment:
-      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
-    ports:
-      - "9000:9000"
-
-
-
 networks:
   newscap-network:
     driver: bridge
-

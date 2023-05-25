@@ -13,4 +13,10 @@ public class ArticleResponse {
     private String id;
     private String title;
     private String content;
+    private String image;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private String userId;
+    private String profession;
 }

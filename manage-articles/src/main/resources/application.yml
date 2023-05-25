@@ -1,0 +1,27 @@
+spring:
+  application.name: capnews-articles-app
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/auth/realms/my_realm
+  data:
+    mongodb:
+      authentication-database: admin
+      username: root
+      password: 123456
+      database: cap-news
+      port: 27017
+      host: localhost
+  profiles:
+    active: dev
+
+rabbitmq:
+  host: rabbitmq
+  port: 5672
+  username: admin
+  password: admin
+
+server:
+  port: 8050
+

@@ -17,5 +17,11 @@ public class Article {
     private String id;
     private String title;
     private String content;
+    private String filePath;
+    private String userId;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private String profession;
 
 }

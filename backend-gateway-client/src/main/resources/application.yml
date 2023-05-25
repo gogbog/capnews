@@ -14,7 +14,9 @@ spring:
               - GET
               - POST
       routes:
-        - id: resources
-          uri: http://backend-resources:8082
+        - id: articles 
+          uri: http://capnews-articles-app:8050
           predicates:
-            Path=/messages/**
+            Path=/articles/**
+
+
