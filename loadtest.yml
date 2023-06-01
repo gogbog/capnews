@@ -1,0 +1,9 @@
+config:
+  target: "http://localhost:8050"
+  phases:
+    - duration: 10
+      arrivalRate: 1000
+scenarios:
+  - flow:
+      - get:
+          url: "/articles"

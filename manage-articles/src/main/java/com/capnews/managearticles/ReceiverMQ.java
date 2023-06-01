@@ -29,16 +29,25 @@ public class ReceiverMQ {
         try {
 
             String messageString = new String(message);
+            System.out.println(messageString);
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> fields = objectMapper.readValue(messageString,
                     new TypeReference<Map<String, Object>>() {
                     });
 
             String operationType = (String) fields.get("type");
-            System.out.println(messageString);
+            String operationTypeSecond = (String) fields.get("operationType");
             System.out.println(operationType);
 
-            if (operationType.equals("UPDATE_PROFILE")) {
+            if (operationTypeSecond != null && operationTypeSecond.equals("DELETE")) {
+
+                String userPath = (String) fields.get("resourcePath");
+                String[] parts = userPath.split("/", 2);
+                String userId = parts[1];
+                articleService.deleteArticlesByUserId(userId);
+            }
+
+            if (operationType != null && operationType.equals("UPDATE_PROFILE")) {
 
                 ObjectMapper newObjectMapper = new ObjectMapper();
                 JsonNode jsonNode = newObjectMapper.readTree(messageString);

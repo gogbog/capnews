@@ -6,10 +6,10 @@ RUN curl -fsSL https://dlcdn.apache.org/maven/maven-3/3.9.1/binaries/apache-mave
     && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 
 
-WORKDIR = app/
 
 COPY manage-articles/pom.xml .
 COPY manage-articles/src/ ./src/
+COPY manage-articles/images/ ./images/
 
 RUN  mvn clean package -DskipTests
 

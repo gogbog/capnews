@@ -123,4 +123,10 @@ public class ArticleService {
         log.info("Name updated for articles with userId: {}", userId);
     }
 
+    public void deleteArticlesByUserId(String userId) {
+        List<Article> articles = articleRepository.findByUserId(userId);
+        articles.forEach(article -> articleRepository.delete(article));
+        log.info("Articles deleted for userId: {}", userId);
+    }
+
 }

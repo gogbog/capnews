@@ -63,8 +63,8 @@ services:
       - SPRING_DATA_MONGODB_PASSWORD=123456
       - SPRING_PROFILES_ACTIVE=dev
     volumes:
-      - ./manage-articles/src:/src
       - ./manage-articles/images:/images
+      - ./manage-articles/src:/src
       - ./manage-articles/pom.xml:/pom.xml
     command: mvn spring-boot:run
 
