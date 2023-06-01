@@ -21,6 +21,7 @@ gallery-frontend/node_modules
 *.iws
 *.iml
 *.ipr
+notes.txt
 
 ### NetBeans ###
 /nbproject/private/
