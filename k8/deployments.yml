@@ -1,0 +1,212 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amqp-deployment
+  labels:
+    app: amqp-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: rabbit-pod
+      labels:
+        app: rabbit-pod
+    spec:
+      containers:
+        - name: rabbit-container
+          image: rabbitmq:3.8-management
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rabbit-secrets
+                  key: username
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rabbit-secrets
+                  key: password 
+
+          imagePullPolicy: Always
+          ports:
+            - name: management
+              containerPort: 15672
+            - name: query
+              containerPort: 5672
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: rabbit-pod
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-db
+  template:
+    metadata:
+      labels:
+        app: keycloak-db
+    spec:
+      volumes:
+        - name: postgres-pv-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+      containers:
+        - name: keycloak-db
+          image: postgres:13.5
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_HOST_AUTH_METHOD
+              value: trust
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value: admin
+            - name: POSTGRES_DB
+              value: keycloak_db
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-pv-storage
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-pod
+  template:
+    metadata:
+      labels:
+        app: keycloak-pod
+    spec:
+      containers:
+        - name: keycloak-container
+          image: gogbog11/keycloak-rabbit:latest
+          env:
+            - name: KEYCLOAK_USER
+              valueFrom:
+                secretKeyRef:
+                  name: kc-secrets
+                  key: username
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kc-secrets
+                  key: password
+            - name: DB_VENDOR
+              value: "postgres"
+            - name: DB_ADDR
+              value: keycloak-db
+            - name: DB_DATABASE
+              value: keycloak_db
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: kc-secrets
+                  key: db_username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kc-secrets
+                  key: db_password
+            - name: DB_SCHEMA
+              value: "public"
+            - name: KK_TO_RMQ_URL
+              value: amqp-service
+            - name: KK_TO_RMQ_PORT
+              value: "5672"
+            - name: KK_TO_RMQ_VHOST
+              value: "/"
+            - name: KK_TO_RMQ_EXCHANGE
+              value: "amq.topic"
+            - name: KK_TO_RMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: kc-secrets
+                  key: rabbit_username
+            - name: KK_TO_RMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kc-secrets
+                  key: rabbit_password
+            - name: KK_TO_RMQ_USE_TLS
+              value: "false"
+
+          ports:
+            - name: http
+              containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capnews-mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: capnews-mongodb
+  template:
+    metadata:
+      labels:
+        app: capnews-mongodb
+    spec:
+      volumes:
+        - name: mongodb-pv-storage
+          persistentVolumeClaim:
+            claimName: mongodb-pv-claim
+
+      containers:
+        - name: capnews-mongodb
+          image: mongo
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongodb-pv-storage
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: "root"
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: "123456"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-express
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-express
+  template:
+    metadata:
+      labels:
+        app: mongo-express
+    spec:
+      containers:
+        - name: mongo-express
+          image: mongo-express
+          ports:
+            - containerPort: 8081
+          env:
+            - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+              value: "root"
+            - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+              value: "123456"
+            - name: ME_CONFIG_MONGODB_SERVER
+              value: capnews-mongodb

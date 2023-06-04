@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kc-secrets
+data:
+  username: YWRtaW4=
+  password: YWRtaW4=
+  db_username: YWRtaW4=
+  db_password: YWRtaW4=
+  rabbit_username: YWRtaW4=
+  rabbit_password: YWRtaW4=
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbit-secrets
+data:
+  username: YWRtaW4=
+  password: YWRtaW4=
+ 

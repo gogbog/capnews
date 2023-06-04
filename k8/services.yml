@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: amqp-service
+spec:
+  selector:
+    app: rabbit-pod
+  ports:
+    - name: management
+      port: 15672
+      targetPort: 15672
+    - name: query
+      port: 5672
+      targetPort: 5672
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-db
+spec:
+  selector:
+    app: keycloak-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: capnews-mongodb
+spec:
+  selector:
+    app: capnews-mongodb
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-exress
+spec:
+  ports:
+    - name: http
+      port: 8081
+      targetPort: 8081
+  selector:
+    app: mongo-express
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-service
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: keycloak-pod
+  type: LoadBalancer
