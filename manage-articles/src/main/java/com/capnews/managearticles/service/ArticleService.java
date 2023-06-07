@@ -33,6 +33,7 @@ public class ArticleService {
 
     public void createArticle(ArticleRequest articleRequest, Jwt jwt) throws IOException {
 
+        System.out.println("creating an article");
         MultipartFile file = articleRequest.getFile();
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         String uploadDir = "images/";
@@ -41,13 +42,18 @@ public class ArticleService {
         File uploadDirFile = new File(uploadDir);
         if (!uploadDirFile.exists()) {
             uploadDirFile.mkdir();
+            System.out.println(uploadDirFile);
         }
+
+        System.out.println("folder exists?");
 
         // Save the file to the images folder
         String filePath = uploadDir + fileName;
 
         // Save the file to the images folder
         Files.copy(file.getInputStream(), Path.of(filePath));
+
+        System.out.println("coping file");
 
         // Map<String, Object> claims = jwt.getClaims();
         //

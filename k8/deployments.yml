@@ -146,10 +146,10 @@ spec:
                   key: rabbit_password
             - name: KK_TO_RMQ_USE_TLS
               value: "false"
-
           ports:
             - name: http
               containerPort: 8080
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -180,9 +180,15 @@ spec:
               name: mongodb-pv-storage
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
-              value: "root"
+              valueFrom:
+                secretKeyRef:
+                  name: capnews-secrets
+                  key: username 
             - name: MONGO_INITDB_ROOT_PASSWORD
-              value: "123456"
+              valueFrom:
+                secretKeyRef:
+                  name: capnews-secrets
+                  key: password
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -205,8 +211,133 @@ spec:
             - containerPort: 8081
           env:
             - name: ME_CONFIG_MONGODB_ADMINUSERNAME
-              value: "root"
+              valueFrom:
+                secretKeyRef:
+                  name: capnews-secrets
+                  key: username 
             - name: ME_CONFIG_MONGODB_ADMINPASSWORD
-              value: "123456"
+              valueFrom:
+                secretKeyRef:
+                  name: capnews-secrets
+                  key: password
             - name: ME_CONFIG_MONGODB_SERVER
-              value: capnews-mongodb
+              value: capnews-mongodb-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capnews-articles-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: capnews-articles-app
+  template:
+    metadata:
+      labels:
+        app: capnews-articles-app
+    spec:
+      volumes:
+        - name: images-pv-storage
+          persistentVolumeClaim:
+            claimName: images-pv-claim
+      containers:
+        - name: capnews-articles-app
+          image: gogbog11/capnews:v15
+          ports:
+            - containerPort: 8050
+          env:
+
+            - name: SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE
+              value: "admin"
+            - name: ISSUER_URI
+              value: http://192.168.39.23:30028/auth/realms/my_realm
+            - name: SPRING_DATA_MONGODB_HOST
+              value: capnews-mongodb-service
+            - name: SPRING_DATA_MONGODB_PORT
+              value: "27017"
+            - name: SPRING_DATA_MONGODB_DATABASE
+              value: "cap-news"
+            - name: SPRING_DATA_MONGODB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: capnews-secrets
+                  key: username 
+            - name: SPRING_DATA_MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: capnews-secrets
+                  key: password 
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+            - name: RABBITMQ_HOST
+              value: amqp-service
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USERNAME
+              value: "admin"
+            - name: RABBITMQ_PASSWORD
+              value: "admin"
+          volumeMounts:
+            - mountPath: /usr/app/images
+              name: images-pv-storage
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dashboard-ingress
+  namespace: kubernetes-dashboard
+spec:
+  rules:
+  - host: dashboard.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: kubernetes-dashboard
+            port:
+              number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: capnews-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:3000"
+spec:
+  rules:
+  - host: capnews.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: capnews-articles-service
+            port:
+              number: 8050
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak-ingress
+spec:
+  rules:
+  - host: keycloak.capnews.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: keycloak-service
+            port:
+              number: 8080
+
+

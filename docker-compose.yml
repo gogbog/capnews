@@ -86,7 +86,7 @@ services:
       - newscap-network
 
   kc:
-    image: keycloak-local:latest
+    image: jboss/keycloak
     container_name: backend-keycloak-auth
     hostname: keycloak
     environment:

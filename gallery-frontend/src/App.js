@@ -2,7 +2,7 @@
 import Header from './Components/Header/Header';
 
 import { AuthProvider } from "react-oidc-context";
-import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Index from "./Layouts/Index";
 import { Toaster } from 'react-hot-toast';
 import Settings from './Components/Header/Settings';
@@ -12,7 +12,7 @@ import Settings from './Components/Header/Settings';
 const App = () => {
 
     const oidcConfig = {
-        authority: "http://keycloak:8080/auth/realms/my_realm/",
+        authority: "http://192.168.39.23:30028/auth/realms/my_realm/",
         client_id: "frontend_client",
         redirect_uri: "http://localhost:3000/",
         response_type: 'code',

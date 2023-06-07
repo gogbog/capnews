@@ -4,20 +4,19 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/auth/realms/my_realm
-  data:
+          issuer-uri: ${ISSUER_URI:http://192.168.39.23:32167/auth/realms/my_realm}
     mongodb:
       authentication-database: admin
-      username: root
-      password: 123456
-      database: cap-news
-      port: 27017
-      host: localhost
+      username: ${SPRING_DATA_MONGODB_USERNAME:root}
+      password: ${SPRING_DATA_MONGODB_PASSWORD:123456}
+      database: ${SPRING_DATA_MONGODB_DATABASE:capnews}
+      port: ${SPRING_DATA_MONGODB_PORT:27017}
+      host: ${SPRING_DATA_MONGODB_HOST:localhost}
   profiles:
     active: dev
 
 rabbitmq:
-  host: rabbitmq
+  host: my-rabbitmq
   port: 5672
   username: admin
   password: admin

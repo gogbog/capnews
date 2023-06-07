@@ -11,7 +11,7 @@ const Index = () => {
     const [data, setData] = useState(null);
 
     if (data == null) {
-        axios.get('http://localhost:8083/articles')
+        axios.get('http://capnews.com/articles')
             .then(response => {
                 setData(response.data);
                 console.log(data);

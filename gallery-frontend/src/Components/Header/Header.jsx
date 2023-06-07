@@ -17,7 +17,6 @@ import toast from "react-hot-toast";
 // Header component
 const Header = () => {
     const auth = useAuth();
-    console.log(auth);
 
     const hiddenFileInput = React.useRef(null);
     const [fileName, setFileName] = useState(null);
@@ -50,7 +49,7 @@ const Header = () => {
         //formData.append("file", file);
         //
 
-        axios.post('http://localhost:8083/articles', formData, { headers })
+        axios.post('http://capnews.com/articles', formData, { headers })
             .then(response => {
                 toast.success("Congratulations!\nYour art is now in the digital realm!");
                 setFileName(null);

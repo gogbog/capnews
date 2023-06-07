@@ -29,7 +29,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: capnews-mongodb
+  name: capnews-mongodb-service
 spec:
   selector:
     app: capnews-mongodb
@@ -63,3 +63,16 @@ spec:
   selector:
     app: keycloak-pod
   type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: capnews-articles-service
+spec:
+  selector:
+    app: capnews-articles-app
+  ports:
+    - protocol: TCP
+      port: 8050
+      targetPort: 8050
+

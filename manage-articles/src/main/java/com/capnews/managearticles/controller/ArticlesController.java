@@ -30,6 +30,7 @@ public class ArticlesController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> createArticle(@ModelAttribute ArticleRequest articleRequest, @AuthenticationPrincipal Jwt jwt)
             throws IOException {
+        System.out.println("user got access");
         String fileType = articleRequest.getFile().getContentType();
 
         if (!fileType.startsWith("image/")) {
@@ -43,11 +44,13 @@ public class ArticlesController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ArticleResponse> getAllArticles() {
+        System.out.println("user got access");
         return articleService.getAllArticles();
     }
 
     @GetMapping(value= "/image/{imageName:.+}", name="articles.image")
     public ResponseEntity<byte[]> getImage(@PathVariable String imageName) throws IOException {
+        System.out.println("user got access");
         Path imagePath = Paths.get("images", imageName);
         byte[] imageBytes = Files.readAllBytes(imagePath);
 

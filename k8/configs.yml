@@ -17,4 +17,12 @@ metadata:
 data:
   username: YWRtaW4=
   password: YWRtaW4=
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: capnews-secrets
+data:
+  username: cm9vdA==
+  password: MTIzNDU2
  
