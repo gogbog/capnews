@@ -18,6 +18,7 @@ const App = () => {
         response_type: 'code',
         scope: "openid profile message.read",
     };
+    //
 
     return (
         <AuthProvider {...oidcConfig}>
