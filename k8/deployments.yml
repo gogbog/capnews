@@ -308,8 +308,11 @@ kind: Ingress
 metadata:
   name: capnews-ingress
   annotations:
+    nginx.org/server-snippet: "proxy_ssl_verify off;"
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:3000"
+
 spec:
   rules:
   - host: capnews.com

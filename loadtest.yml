@@ -1,9 +1,18 @@
 config:
-  target: "http://localhost:8050"
+  target: "http://capnews.com"
   phases:
-    - duration: 10
-      arrivalRate: 1000
+    - duration: 5
+      arrivalRate: 400
+      name: "EASY"
+    - duration: 5
+      arrivalRate: 800
+      name: "MEDIUM"
+    - duration: 5
+      arrivalRate: 1200
+      name: "HARD"
 scenarios:
   - flow:
       - get:
           url: "/articles"
+      - think: 2
+
