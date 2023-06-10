@@ -17,7 +17,6 @@
 
     <modules>
         <module>backend-gateway-client</module>
-        <module>backend-resources</module>
         <module>manage-articles</module>
     </modules>
 
