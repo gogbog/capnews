@@ -49,7 +49,6 @@ spec:
       targetPort: 8081
   selector:
     app: mongo-express
-  type: LoadBalancer
 ---
 apiVersion: v1
 kind: Service
@@ -75,4 +74,5 @@ spec:
     - protocol: TCP
       port: 8050
       targetPort: 8050
+  type: LoadBalancer
 

@@ -1,5 +1,5 @@
 Cypress.Commands.add('kcLogin', (username, password) => {
-  const kcRoot = 'http://keycloak:8080';
+  const kcRoot = 'http://20.106.67.156:8080';
   const kcRealm = 'my_realm';
   const kcClient = 'frontend_client';
   const kcRedirectUri = 'http://localhost:3000/';

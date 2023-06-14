@@ -1,14 +1,14 @@
 config:
-  target: "http://capnews.com"
+  target: "http://20.150.154.243:8050"
   phases:
     - duration: 5
-      arrivalRate: 400
+      arrivalRate: 1000
       name: "EASY"
     - duration: 5
-      arrivalRate: 800
+      arrivalRate: 2000
       name: "MEDIUM"
-    - duration: 5
-      arrivalRate: 1200
+    - duration: 30
+      arrivalRate: 10000
       name: "HARD"
 scenarios:
   - flow:

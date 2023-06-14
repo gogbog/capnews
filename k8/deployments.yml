@@ -251,7 +251,7 @@ spec:
             - name: SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE
               value: "admin"
             - name: ISSUER_URI
-              value: http://192.168.39.23:30028/auth/realms/my_realm
+              value: http://20.106.67.156:8080/auth/realms/my_realm
             - name: SPRING_DATA_MONGODB_HOST
               value: capnews-mongodb-service
             - name: SPRING_DATA_MONGODB_PORT
@@ -311,7 +311,7 @@ metadata:
     nginx.org/server-snippet: "proxy_ssl_verify off;"
     nginx.ingress.kubernetes.io/rewrite-target: "/"
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:3000"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
 
 spec:
   rules:

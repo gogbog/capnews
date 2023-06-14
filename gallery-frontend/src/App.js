@@ -12,13 +12,13 @@ import Settings from './Components/Header/Settings';
 const App = () => {
 
     const oidcConfig = {
-        authority: "http://keycloak:8080/auth/realms/my_realm/",
+        // authority: "http://192.168.39.23:30028/auth/realms/my_realm/",
+        authority: "http://20.106.67.156:8080/auth/realms/my_realm/",
         client_id: "frontend_client",
         redirect_uri: "http://localhost:3000/",
         response_type: 'code',
         scope: "openid profile message.read",
     };
-    //
 
     return (
         <AuthProvider {...oidcConfig}>
