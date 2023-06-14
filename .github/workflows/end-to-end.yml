@@ -8,11 +8,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Change working directory to frontend
-        run: cd gallery-frontend/
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
+        working-directory: ./gallery-frontend
         uses: cypress-io/github-action@v5
         with:
           build: npm run build
